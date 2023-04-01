@@ -1,0 +1,169 @@
+/* Styles généraux */
+
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Styles pour l'en-tête */
+
+header {
+    background-color: #333;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2rem;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+}
+
+nav li {
+    margin: 0 10px;
+}
+
+nav a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/* Styles pour les sections */
+
+section {
+    background-color: #f2f2f2;
+    padding: 50px;
+    border-bottom: 1px solid #ccc;
+}
+
+section h2 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+  
+section p {
+    font-size: 18px;
+    line-height: 1.5;
+    margin-bottom: 30px;
+}
+  
+section img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+section ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+section li {
+    margin: 10px 0;
+}
+
+/* Styles pour le pied de page */
+
+footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+}
+.logo img {
+    height: 50px; /* Hauteur souhaitée du logo */
+    /* Vous pouvez également utiliser la propriété "width" pour ajuster la largeur */
+}
+.activities {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+  
+.activity {
+    margin: 30px;
+    padding: 30px;
+    text-align: center;
+    width: 1000px;
+    border: 1px solid #ccc;
+}
+
+.activity p {
+    margin-top: 30px;
+}
+
+.activity h2 {
+    margin-top: 10px;
+}
+.bouton {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    text-align: center;
+    text-decoration: none;
+}
+  
+.bouton:hover {
+    background-color: #0062cc;
+    cursor: pointer;
+}
+#enonce{
+    background-color: rgba(182, 176, 176, 0.5);
+    padding: 20px;
+    border-radius:20px;
+    margin: 25px;
+    color: black;
+}
+
+#exp{
+    background-color: rgba(182, 176, 176, 0.5);
+    padding: 20px;
+    border-radius:20px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    margin-left: auto;
+    margin-right: auto;
+    color: black;
+    width: 80%
+}
+
+#nav{
+    background-color: rgba(182, 176, 176, 0.5);
+    padding: 20px;
+    border-radius:20px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    margin-left: auto;
+    margin-right: auto;
+    color: black;
+    width: 85%
+}
+
+.image{
+    margin-top: 15px;
+    margin-bottom: 15px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.quote{
+    font-style: italic;
+    margin: auto;
+}

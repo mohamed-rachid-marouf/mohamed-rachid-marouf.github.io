@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Activité 02</title>
+	<link rel="icon" type="image/jpg" href="img/Logo-Tilmatine-&-Marouf.jpg">
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<link rel="stylesheet" href="highlight/styles/default.min.css">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous">
+</head>
+<body>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js" integrity="sha384-qKXV1j0HvMUeCBQ+QVp7JcfGl760yU08IQ+GpUo5hlbpg51QRiuqHAJz8+BrxE/N" crossorigin="anonymous"></script>
+	<script src="highlight/highlight.min.js"></script>
+	<script>hljs.highlightAll();</script>
+	<header>
+		<div class="logo">
+			<img src="img/Logo-Tilmatine-&-Marouf.jpg" alt="Logo de Groupe Tilmatine & Marouf">
+		</div>
+		<h1>Activité 02</h1>
+		<nav>
+			<ul>
+				<li><a href="index.html">Accueil</a></li>
+			</ul>
+		</nav>
+	</header>
+	<section>
+		<div id="enonce">
+			<h2>Activité 2</h2>
+			<p>
+				&ensp;Script qui utilise un fichier qui contiens des noms pour créer un compte utilisateur
+				<br>
+				&ensp;Générer clé privé et publique propre a chaque utilisateur et les mettres dans "/home/$user/KEYS"
+				<br>
+				&ensp;Puis créer un fichier "/PUBKEYS" qui contiens les clés de tous les utilisateurs
+			</p>
+		</div>
+		<div id="enonce">
+			<h1>Le Script</h1>
+			<div id="exp">
+				<p>
+					&ensp;Ce script shell crée des comptes d'utilisateurs Linux avec des noms fournis en entrée par l'utilisateur.
+					<br>
+					&ensp;Nous commençons par définir la variable "stp" sur "false" et démarrons une boucle "while".
+					<br>
+					Cette boucle continuera tant que la valeur de "stp" est "false". A chaque tour de boucle, l'utilisateur est invité à entrer un nom de compte. 
+					<br>
+					Ce nom est alors ajouté à la fin du fichier "act2/names.txt".<br>
+					&ensp;Ensuite, l'utilisateur est invité à répondre à la question « Voulez-vous continuer à fournir des noms ? avec "Y" pour continuer ou "N" pour arrêter.
+					<br>
+					Si l'utilisateur saisit une réponse autre que "O" ou "N", un message d'erreur s'affiche.
+				</p>
+				<pre>
+					<code class="sh">
+#!/bin/bash
+stp=false
+while [ "$stp" = false ]; do
+	read -p "entrer les noms de comptes que vous voulez créer: " blaze
+	echo $blaze >> "act2/names.txt"
+	read -p "do you want to continue providing names? (Y/N)" yn
+	case $yn in
+		[yY] ) ;;
+		[nN] ) stp=true;;
+		* ) echo "réponse invalide";;
+	esac
+done						
+</code>
+				</pre>
+				<p>
+					&ensp;Le code obtiendra les noms d'utilisateur à partir d'un fichier texte et créera de nouveaux comptes d'utilisateurs sur l'ordinateur.
+					<br>
+					&nbsp;Le script commence par définir la variable "filename" sur la valeur "names.txt".
+					<br>
+					Ensuite, le script définit l'IFS (Internal Field Separator) sur les caractères de tabulation et de saut de ligne. Cela signifie que le script divisera chaque ligne du fichier lu en plusieurs éléments.
+					<br>
+					&nbsp;La boucle "while" parcourt chaque ligne du fichier "names.txt", divisant la ligne en éléments individuels à l'aide du caractère IFS et ajoutant chaque élément non vide à la liste des noms stockés dans la variable "names".
+					<br>
+					&ensp;La variable IFS est effacée.
+				</p>
+				<pre>
+					<code class="sh">
+filename="names.txt"
+IFS=$'\t\n '
+names=()
+while read -ra line; do
+  for name in "${line[@]}"; do
+    if [ -n "$name" ]; then
+      names+=("$name")
+    fi
+  done
+done < "act2/$filename"
+unset IFS
+</code>
+				</pre>
+				<p>
+					&nbsp;Le code vérifie si le script s'exécute en tant que superutilisateur, puis crée des comptes d'utilisateurs en utilisant les noms dans le fichier "names.txt". 
+					<br>
+					&nbsp;Pour chaque nom, le script crée un compte d'utilisateur avec le nom d'utilisateur et le mot de passe, crée un répertoire pour stocker les clés de chiffrement de cet utilisateur et crée une paire de clés RSA pour l'utilisateur. 
+					<br>
+					&nbsp;Les clés sont stockées dans le répertoire et une copie de la clé publique est également stockée dans un fichier nommé "user_name.pubkey" dans le répertoire "act2".
+					<br>
+					&nbsp;Enfin, le script définit les autorisations pour les comptes d'utilisateurs et les fichiers en fonction des exigences de sécurité standard.
+				</p>
+				<pre>
+					<code>
+if [ "$EUID" -ne 0 ]
+  then echo "Please run as root"
+  exit
+fi
+echo "Names in file $filename:"
+for name in "${names[@]}"; do
+	username="$name"
+	password="$name"
+	useradd -m -s /bin/bash $name
+	echo "$name:$name" | chpasswd
+	echo "User account created successfully"
+	mkdir -p "/home/$name/KEYS"
+	openssl genrsa -out "/home/$name/KEYS/pkey" 4096
+	openssl rsa -in "/home/$name/KEYS/pkey" -pubout -out "/home/$name/KEYS/pubkey"
+	openssl rsa -in "/home/$name/KEYS/pkey" -pubout -out "act2/'$name'.pubkey"
+	chmod 700 "/home/$username/KEYS"
+	chmod 600 "/home/$username/KEYS/pkey"
+	chmod 644 "/home/$username/KEYS/pubkey"
+	chmod 644 "act2/'$name'.pubkey"
+done
+</code>
+				</pre>
+			</div>
+		</div>
+		<div id="enonce">
+			<h1>Résultat</h1>
+			<div id="exp">
+				<h3>Remplissage du fichiers des noms</h3>
+				<img src="img/NamesFile.png" alt="insertions des noms" class="image">
+				<p class="quote">insertion des noms des comptes qu'on souhaites créer.</p>
+				<p>
+					<button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#SudoProblem" aria-expanded="false" aria-controls="collapseWidthExample">
+						Note
+					</button>
+				</p>
+				<div>
+					<div class="collapse collapse-horizontal" id="SudoProblem">
+					  <div id="exp" class="card card-body" >
+						<p>&nbsp;Quand on execute pas en tant que root on reçoit cette erreur:</p>
+						<img src="img/RootError.png" alt="root error" class="image">
+						<p style="margin-top: 20px;">&ensp;Pour resoudre cela on précede la commande ./act2TS.sh par sudo<br>Le résultat ressemblera alors a ça:</p>
+						<img src="img/Sudo.png" alt="Sudo solution">
+						<p style="margin-top: 30px;">&ensp;Quand on excute le script apres voir rempli déjà le fichier noms.txt et qu'on veut plus le remplir il suffit de laisser vide lorsqu'il vous demande d'entrer un nom et cela marchera quand même</p>
+					  </div>
+					</div>
+				</div>
+			</div>
+			<div id="exp">
+				<h3>Créations des comptes et clés</h3>
+				<img src="img/User+Key.png" alt="user and key gen" class="image">
+				<p class="quote">Création des utilisateurs et leurs clés.</p>
+				<h5>Après execution des commandes:</h5>
+				<div id="carouselExampleRide" class="carousel slide" data-bs-ride="true">
+					<div class="carousel-inner">
+					  <div class="carousel-item active">
+						<img src="img/home rep.png" class="d-block w-100" alt="...">
+						<p class="quote">Contenu du répértoire /home/</p>
+					  </div>
+					  <div class="carousel-item">
+						<img src="img/users.png" class="d-block w-100" alt="...">
+						<p class="quote">les nouveaux utlisateurs crée a partir du fichier "names.txt"</p>
+					  </div>
+					  <div class="carousel-item">
+						<img src="img/act2 rep.png" class="d-block w-100" alt="...">
+						<p class="quote">répértoire PUBKEYS qui contiens toutes les clés publique</p>
+					  </div>
+					</div>
+					<button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleRide" data-bs-slide="prev">
+					  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+					  <span class="visually-hidden">Previous</span>
+					</button>
+					<button class="carousel-control-next" type="button" data-bs-target="#carouselExampleRide" data-bs-slide="next">
+					  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+					  <span class="visually-hidden">Next</span>
+					</button>
+				  </div>
+				<div style="margin-top: 50px;">
+					<p>
+						<button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#SudoUProblem" aria-expanded="false" aria-controls="collapseWidthExample">
+							Note
+						</button>
+					</p>
+					<div>
+						<div class="collapse collapse-horizontal" id="SudoUProblem">
+					  		<div id="exp" class="card card-body" >
+								<p>&nbsp;Quand on veut acceder au fichier "/home/$user/KEYS"</p>
+								<img src="img/sudo U prob.png" alt="...">
+								<p>&ensp;Cela est du a ce bout de code:</p>
+								<pre>
+							<code class="sh">
+chmod 700 "/home/$username/KEYS"
+chmod 600 "/home/$username/KEYS/pkey"
+chmod 644 "/home/$username/KEYS/pubkey"
+chmod 644 "act2/'$name'.pubkey"
+</code>
+								</pre>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+		</div>
+	</section>
+	<footer>
+		<p>©2023 Group Tilmatine & Marouf, Tous droits réservés.</p>
+		<p>Année universitaire: 2022/2023</p>
+	</footer>
+</body>
+</html>
