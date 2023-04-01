@@ -166,4 +166,10 @@ footer {
 .quote{
     font-style: italic;
     margin: auto;
+    text-align: center;
 }
+
+#enum{
+    list-style-type: circle;
+}
+

@@ -5,9 +5,15 @@
 	<title>Activité 03</title>
     <link rel="icon" type="image/jpg" href="img/Logo-Tilmatine-&-Marouf.jpg">
 	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/an-old-hope.min.css">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous">
 </head>
 <body>
 	<header>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js" integrity="sha384-qKXV1j0HvMUeCBQ+QVp7JcfGl760yU08IQ+GpUo5hlbpg51QRiuqHAJz8+BrxE/N" crossorigin="anonymous"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+		<script>hljs.highlightAll();</script>
 		<div class="logo">
 			<img src="img/Logo-Tilmatine-&-Marouf.jpg" alt="Logo de Groupe Tilmatine & Marouf">
 		</div>
@@ -19,13 +25,154 @@
 		</nav>
 	</header>
 	<section>
-		<h2>Notre activité</h2>
-		<p>Nous sommes une entreprise spécialisée dans la production de widgets. Nos widgets sont fabriqués à partir des meilleurs matériaux et sont conçus pour durer.</p>
-		<ul>
-			<li>Nous offrons une garantie de 5 ans sur tous nos produits.</li>
-			<li>Nous avons une équipe de support technique disponible 24 heures sur 24 pour répondre à toutes vos questions.</li>
-			<li>Nous offrons une livraison rapide et fiable dans le monde entier.</li>
-		</ul>
+		<div id="enonce">
+			<h1>Activité 03</h1>
+			<div id="exp">
+				<h2>Enoncé de l'activité</h2>
+				&ensp;Création de 2 scripts: sender & receiver.
+			</div>
+			<div id="exp">
+				<h3>Sender's Script</h3>
+				<p>
+					&ensp;Ce code crée un répertoire nommé "Rayan" s'il n'existe pas encore, puis il définit une variable "msg" contenant la chaîne de caractères "Nec possum tecum vivere, nec sine te".
+					<br>
+					&nbsp;Ensuite, il génère trois clés de chiffrement :
+				</p>
+				<ul id="enum">
+					<li>"SKEY" : une clé secrète de 16 octets générée aléatoirement à l'aide de la commande openssl rand.</li>
+					<li>"IV" : un vecteur d'initialisation de 16 octets généré aléatoirement à l'aide de la commande openssl rand.</li>
+					<li>"HKEY" : une clé de hachage de 16 octets générée aléatoirement à l'aide de la commande openssl rand.</li>
+				</ul>
+				<p>
+					&nbsp;La variable "hmac" est ensuite définie en calculant le HMAC de la variable "msg" avec la clé "HKEY" et l'algorithme de hachage SHA-256.
+					<br>
+					&nbsp;La variable "CMSG" est définie en chiffrant la variable "msg" avec l'algorithme de chiffrement AES-256-CBC, la clé "SKEY" et le vecteur d'initialisation "IV", puis en encodant le résultat en base64.
+					<br>
+					&nbsp;Finalement, les valeurs des variables "CMSG", "SKEY", "HKEY" et "IV" sont écrites dans le fichier "message.txt" situé dans le répertoire "Rayan".
+				</p>
+				<pre>
+					<code class="sh">
+#!/bin/bash
+
+mkdir -p "Rayan"
+						
+msg="Nec possum tecum vivere, nec sine te"
+						
+SKEY=$(openssl rand -hex 16)
+IV=$(openssl rand -hex 16)
+HKEY=$(openssl rand -hex 16)
+						
+hmac=$(echo -n "$msg" | openssl dgst -sha256 -hmac "$HKEY" | awk '{print $2}')
+						
+CMSG=$(echo -n "$msg" | openssl enc -aes-256-cbc -K "${SKEY}" -iv "${IV}" -base64)
+						
+printf "Encrypted Message: $CMSG\nSecret Key: $SKEY\nHMAC: $HKEY\nIv: $IV" >> "Rayan/message.txt"						
+</code>
+				</pre>
+				<p>
+					<button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#Sexec" aria-expanded="false" aria-controls="collapseWidthExample">
+						Exec
+					</button>
+				</p>
+				<div>
+					<div class="collapse collapse-horizontal" id="Sexec">
+					  <div id="exp" class="card card-body" >
+						<img src="img/sender.png" alt="Sarah's script" class="image">
+						<p class="quote">Execution du script</p>
+					  </div>
+					</div>
+				</div>
+				<p>
+					<button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#Sresult" aria-expanded="false" aria-controls="collapseWidthExample">
+						Result
+					</button>
+				</p>
+				<div>
+					<div class="collapse collapse-horizontal" id="Sresult">
+					  <div id="exp" class="card card-body" >
+						<img src="img/message.png" alt="message.txt" class="image">
+						<p class="quote">Contenu du fichier "Rayan/message.txt"</p>
+					  </div>
+					</div>
+				</div>
+				
+			</div>
+			<div id="exp">
+				<h3>Receiver's Script</h3>
+				<p>
+					&ensp;Ce script Bash est utilisé pour déchiffrer un message, vérifier l'intégrité du message et envoyer une réponse.
+					<br>
+					&nbsp;Le premier script crée un répertoire nommé "Sarah" et attend que le fichier "message.txt" soit créé par le script précédent. En attendant, une animation s'affiche dans le terminal.
+					<br>
+					&nbsp;Le script lit le fichier "message.txt" et extrait les valeurs des éléments suivants : la clé secrète, le message chiffré, le code d'authentification de message basé sur le hachage (HMAC) et le vecteur d'initialisation (IV). Il déchiffre ensuite le message chiffré à l'aide de la clé secrète et du vecteur d'initialisation et stocke le résultat dans la variable $decrypted.
+					<br>
+					&nbsp;Le code crée un nouveau code de hachage pour le message déchiffré à l'aide de la clé précédemment extraite et stocke le résultat dans la variable $chmac.
+					<br>
+					&nbsp;Le script vérifie si les codes HMAC correspondent. Si c'est le cas, le script affichera le message décrypté et ajoutera un message de réponse au fichier "response.txt" dans le répertoire "Sarah". S'ils ne le font pas, le script dira "Tu n'es pas Sarah!" pour indiquer que l'expéditeur du message est incorrect.
+				</p>
+				<pre>
+					<code class="sh">
+#!/bin/bash
+
+mkdir -p "Sarah"
+						
+i=1
+sp="/-\|"
+while [ ! -f message.txt ]
+do
+  printf "\b${sp:i++%${#sp}:1}"
+done
+						
+file=$(cat "Rayan/message.txt")
+				
+Scle=$(echo "$file" | grep "Secret Key:" | awk '{print $3}')
+						
+crypted=$(echo "$file" | grep "Encrypted Message:" | awk '{print $3}')						
+						
+Hmac=$(echo "$file" | grep "HMAC:" | awk '{print $2}')						
+						
+inv=$(echo "$file" | grep "Iv:" | awk '{print $2}')						
+						
+decrypted=$(echo -n "$crypted" | base64 -d | openssl enc -d -aes-256-cbc -K "$Scle" -iv "$inv")
+						
+chmac=$(echo -n "$decrypted" | openssl dgst -sha256 -hmac $Hmac | awk '{print $2}')						
+						
+if [ "$HMAC" == "$CALCULATED_HMAC" ]; then
+	echo "Message: $MESSAGE"
+	echo "Message received, thank you " >> "Sarah/response.txt" 
+else
+	echo "You are not Sarah!"
+fi					
+</code>
+				</pre>
+				<p>
+					<button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#Rexec" aria-expanded="false" aria-controls="collapseWidthExample">
+						Exec
+					</button>
+				</p>
+				<div>
+					<div class="collapse collapse-horizontal" id="Rexec">
+					  <div id="exp" class="card card-body" >
+						<img src="img/receiver.png" alt="Rayan's script" class="image">
+						<p class="quote">Execution du script</p>
+					  </div>
+					</div>
+				</div>
+				<p>
+					<button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#Rresult" aria-expanded="false" aria-controls="collapseWidthExample">
+						Result
+					</button>
+				</p>
+				<div>
+					<div class="collapse collapse-horizontal" id="Rresult">
+					  <div id="exp" class="card card-body" >
+						<img src="img/response.png" alt="message.txt" class="image">
+						<p class="quote">Contenu du fichier "Sarah/response.txt"</p>
+					  </div>
+					</div>
+				</div>
+			</div>
+		</div>
 	</section>
 	<footer>
 		<p>©2023 Group Tilmatine & Marouf, Tous droits réservés.</p>
